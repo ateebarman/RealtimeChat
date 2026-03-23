@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+# Interview Guide (documentation, not part of codebase)
+INTERVIEW_GUIDE.md
