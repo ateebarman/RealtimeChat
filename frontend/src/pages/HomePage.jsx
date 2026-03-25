@@ -20,7 +20,7 @@ const HomePage = () => {
               <SparklesIcon className="size-4" /> Language + Social
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
-              Welcome to Streamify
+              Welcome to WaveConnect
             </h1>
             <p className="text-lg sm:text-xl text-base-content/80">
               Meet language partners with one click. Practice speaking in real-time voice/video, get feedback, and track progress—all in one beautiful experience.
@@ -76,7 +76,7 @@ const HomePage = () => {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold">Core Features</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-base-content/80">
-              Streamify gives you the tools to build real language fluency with a fast, social workflow. Explore each feature and see how it works together.
+              WaveConnect gives you the tools to build real language fluency with a fast, social workflow. Explore each feature and see how it works together.
             </p>
           </div>
 

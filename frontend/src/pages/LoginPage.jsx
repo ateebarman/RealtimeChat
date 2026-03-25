@@ -46,7 +46,7 @@ const LoginPage = () => {
                 <ShipWheelIcon className="w-6 h-6 text-white" />
               </div>
               <span className={`text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-[#ff8373] via-[#ff5735] to-[#ffbc67]`}>
-                Streamify
+                WaveConnect
               </span>
             </div>
 
@@ -127,7 +127,7 @@ const LoginPage = () => {
 
             {/* SIGNUP LINK */}
             <div className="text-center space-y-2">
-              <p className={isLight ? "text-slate-600" : "text-gray-400"}>New to Streamify?</p>
+              <p className={isLight ? "text-slate-600" : "text-gray-400"}>New to WaveConnect?</p>
               <Link
                 to="/signup"
                 className={`inline-block font-semibold px-6 py-2 rounded-lg border transition-all duration-200 ${

@@ -50,7 +50,7 @@ const SignUpPage = () => {
                 <ShipWheelIcon className="w-6 h-6 text-white" />
               </div>
               <span className={`text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-[#ff8373] via-[#ff5735] to-[#ffbc67]`}>
-                Streamify
+                WaveConnect
               </span>
             </div>
 
