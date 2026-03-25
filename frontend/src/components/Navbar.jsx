@@ -3,6 +3,8 @@ import useAuthUser from "../hooks/useAuthUser";
 import { BellIcon, LogOutIcon, ShipWheelIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import useLogout from "../hooks/useLogout";
+import { useQuery } from "@tanstack/react-query";
+import { getFriendRequests } from "../lib/api";
 
 const Navbar = () => {
   const { authUser } = useAuthUser();
@@ -16,6 +18,12 @@ const Navbar = () => {
   // });
 
   const { logoutMutation } = useLogout();
+
+  const { data: friendRequests } = useQuery({
+    queryKey: ["friendRequests"],
+    queryFn: getFriendRequests,
+  });
+  const unreadNotificationsCount = friendRequests?.incomingReqs?.length || 0;
 
   return (
     <nav className="bg-base-200 border-b border-base-300 sticky top-0 z-30 h-16 flex items-center">
@@ -35,9 +43,16 @@ const Navbar = () => {
 
           <div className="flex items-center gap-3 sm:gap-4 ml-auto">
             <Link to={"/notifications"}>
-              <button className="btn btn-ghost btn-circle">
-                <BellIcon className="h-6 w-6 text-base-content opacity-70" />
-              </button>
+              <div className="indicator mr-2">
+                <button className="btn btn-ghost btn-circle">
+                  <BellIcon className="h-6 w-6 text-base-content opacity-70" />
+                </button>
+                {unreadNotificationsCount > 0 && (
+                  <span className="badge badge-sm badge-primary indicator-item mt-2 mr-2">
+                    {unreadNotificationsCount}
+                  </span>
+                )}
+              </div>
             </Link>
           </div>
 

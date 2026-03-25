@@ -2,10 +2,14 @@ import User from "../models/User.js";
 import FriendRequest from "../models/FriendRequest.js";
 import { upsertStreamUser } from "../lib/stream.js";
 
-export async function getRecommendedUsers(req, res) {
+export async function getRecommendedUsers(req, res, next) {
   try {
     const currentUserId = req.user.id;
     const currentUser = req.user;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
 
     const recommendedUsers = await User.find({
       $and: [
@@ -13,24 +17,31 @@ export async function getRecommendedUsers(req, res) {
         { _id: { $nin: currentUser.friends } }, // exclude current user's friends
         { isOnboarded: true },
       ],
-    });
+    }).skip(skip).limit(limit);
+
     res.status(200).json(recommendedUsers);
   } catch (error) {
-    console.error("Error in getRecommendedUsers controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
-export async function getMyFriends(req, res) {
+export async function getMyFriends(req, res, next) {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
     const user = await User.findById(req.user.id)
       .select("friends")
-      .populate("friends", "fullName profilePic nativeLanguage learningLanguage");
+      .populate({
+        path: "friends",
+        select: "fullName profilePic nativeLanguage learningLanguage",
+        options: { skip, limit }
+      });
 
     res.status(200).json(user.friends);
   } catch (error) {
-    console.error("Error in getMyFriends controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
@@ -75,8 +86,7 @@ export async function sendFriendRequest(req, res) {
 
     res.status(201).json(friendRequest);
   } catch (error) {
-    console.error("Error in sendFriendRequest controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
@@ -110,8 +120,7 @@ export async function acceptFriendRequest(req, res) {
 
     res.status(200).json({ message: "Friend request accepted" });
   } catch (error) {
-    console.log("Error in acceptFriendRequest controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
@@ -129,8 +138,7 @@ export async function getFriendRequests(req, res) {
 
     res.status(200).json({ incomingReqs, acceptedReqs });
   } catch (error) {
-    console.log("Error in getPendingFriendRequests controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
@@ -143,8 +151,7 @@ export async function getOutgoingFriendReqs(req, res) {
 
     res.status(200).json(outgoingRequests);
   } catch (error) {
-    console.log("Error in getOutgoingFriendReqs controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
@@ -183,7 +190,6 @@ export async function updateUser(req, res) {
 
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error("Error in updateUser controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }

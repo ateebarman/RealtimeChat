@@ -1,11 +1,21 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, HomeIcon, SettingsIcon, ShipWheelIcon, UsersIcon } from "lucide-react";
+import { BellIcon, HomeIcon, MessageSquareIcon, SettingsIcon, ShipWheelIcon, UsersIcon } from "lucide-react";
+import { useChatStore } from "../store/useChatStore";
+import { useQuery } from "@tanstack/react-query";
+import { getFriendRequests } from "../lib/api";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { unreadCount } = useChatStore();
+
+  const { data: friendRequests } = useQuery({
+    queryKey: ["friendRequests"],
+    queryFn: getFriendRequests,
+  });
+  const unreadNotificationsCount = friendRequests?.incomingReqs?.length || 0;
 
   return (
     <aside className="w-64 bg-base-200 border-r border-base-300 hidden lg:flex flex-col h-screen sticky top-0">
@@ -40,12 +50,32 @@ const Sidebar = () => {
         </Link>
 
         <Link
+          to="/messages"
+          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
+            currentPath === "/messages" ? "btn-active" : ""
+          }`}
+        >
+          <div className="indicator">
+            <MessageSquareIcon className="size-5 text-base-content opacity-70" />
+            {unreadCount > 0 && (
+              <span className="badge badge-xs badge-primary indicator-item">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </div>
+          <span>Messages</span>
+        </Link>
+
+        <Link
           to="/notifications"
           className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
             currentPath === "/notifications" ? "btn-active" : ""
           }`}
         >
-          <BellIcon className="size-5 text-base-content opacity-70" />
+          <div className="indicator pr-1">
+            <BellIcon className="size-5 text-base-content opacity-70" />
+            {unreadNotificationsCount > 0 && (
+              <span className="badge badge-xs badge-primary indicator-item">{unreadNotificationsCount}</span>
+            )}
+          </div>
           <span>Notifications</span>
         </Link>
 

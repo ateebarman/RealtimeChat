@@ -2,24 +2,10 @@ import { upsertStreamUser } from "../lib/stream.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
-export async function signup(req, res) {
+export async function signup(req, res, next) {
   const { email, password, fullName } = req.body;
 
   try {
-    if (!email || !password || !fullName) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists, please use a diffrent one" });
@@ -65,18 +51,13 @@ export async function signup(req, res) {
 
     res.status(201).json({ success: true, user: newUser });
   } catch (error) {
-    console.log("Error in signup controller", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
-export async function login(req, res) {
+export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid email or password" });
@@ -97,34 +78,18 @@ export async function login(req, res) {
 
     res.status(200).json({ success: true, user });
   } catch (error) {
-    console.log("Error in login controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
-export function logout(req, res) {
+export function logout(req, res, next) {
   res.clearCookie("jwt");
   res.status(200).json({ success: true, message: "Logout successful" });
 }
 
-export async function onboard(req, res) {
+export async function onboard(req, res, next) {
   try {
     const userId = req.user._id;
-
-    const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
-
-    if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
-      return res.status(400).json({
-        message: "All fields are required",
-        missingFields: [
-          !fullName && "fullName",
-          !bio && "bio",
-          !nativeLanguage && "nativeLanguage",
-          !learningLanguage && "learningLanguage",
-          !location && "location",
-        ].filter(Boolean),
-      });
-    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -150,7 +115,6 @@ export async function onboard(req, res) {
 
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error("Onboarding error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
